@@ -2,39 +2,62 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* NGO Website Design System - Professional, Trustworthy, Inspiring */
 
 @layer base {
   :root {
+    /* Core Colors - Trustworthy Blues and Calming Greens */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 215 25% 27%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 215 25% 27%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 215 25% 27%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary - Deep Trust Blue */
+    --primary: 225 74% 39%;
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 225 74% 35%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary - Fresh Hope Green */
+    --secondary: 142 71% 37%;
+    --secondary-foreground: 0 0% 100%;
+    --secondary-hover: 142 71% 33%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Accent - Bright Inspiration Blue */
+    --accent: 217 91% 60%;
+    --accent-foreground: 0 0% 100%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Muted - Soft Professional Grays */
+    --muted: 220 13% 96%;
+    --muted-foreground: 215 16% 47%;
+
+    /* Success - Emerald Green */
+    --success: 160 84% 39%;
+    --success-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 225 74% 39%;
+
+    /* Gradients - Inspiring and Uplifting */
+    --gradient-hero: linear-gradient(135deg, hsl(225 74% 39%) 0%, hsl(217 91% 60%) 100%);
+    --gradient-cta: linear-gradient(135deg, hsl(142 71% 37%) 0%, hsl(160 84% 39%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(220 13% 98%) 100%);
+    
+    /* Shadows - Professional Depth */
+    --shadow-soft: 0 2px 8px -2px hsl(225 74% 39% / 0.1);
+    --shadow-medium: 0 4px 16px -4px hsl(225 74% 39% / 0.15);
+    --shadow-strong: 0 8px 32px -8px hsl(225 74% 39% / 0.2);
+    
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     --radius: 0.5rem;
 
@@ -101,5 +124,67 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  /* Hero Section Styles */
+  .hero-gradient {
+    background: var(--gradient-hero);
+  }
+  
+  .cta-gradient {
+    background: var(--gradient-cta);
+  }
+  
+  /* Card Styles */
+  .card-soft {
+    background: var(--gradient-card);
+    box-shadow: var(--shadow-soft);
+  }
+  
+  .card-elevated {
+    box-shadow: var(--shadow-medium);
+    transition: var(--transition-smooth);
+  }
+  
+  .card-elevated:hover {
+    box-shadow: var(--shadow-strong);
+    transform: translateY(-2px);
+  }
+  
+  /* Animation Classes */
+  .animate-fade-in {
+    animation: fade-in 0.6s ease-out forwards;
+  }
+  
+  .animate-slide-up {
+    animation: slide-up 0.8s ease-out forwards;
+  }
+  
+  .animate-scale-in {
+    animation: scale-in 0.5s ease-out forwards;
+  }
+}
+
+@layer utilities {
+  .transition-smooth {
+    transition: var(--transition-smooth);
+  }
+  
+  .transition-bounce {
+    transition: var(--transition-bounce);
+  }
+  
+  .gradient-text {
+    background: var(--gradient-hero);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 }
