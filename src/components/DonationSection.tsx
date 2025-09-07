@@ -8,8 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Heart, CreditCard, Shield, Award } from "lucide-react";
 
 const DonationSection = () => {
-  const [selectedAmount, setSelectedAmount] = useState("50");
-  const [customAmount, setCustomAmount] = useState("");
+  const [amount, setAmount] = useState("");
   const [isMonthly, setIsMonthly] = useState(false);
   const [donorInfo, setDonorInfo] = useState({
     name: "",
@@ -18,26 +17,10 @@ const DonationSection = () => {
     anonymous: false
   });
 
-  const presetAmounts = ["25", "50", "100", "250", "500"];
-
-  const impactData = {
-    "25": "Provides school supplies for 2 children",
-    "50": "Feeds a family of 4 for a week",
-    "100": "Provides healthcare for 3 people",
-    "250": "Sponsors a child's education for a month",
-    "500": "Funds clean water access for a community"
-  };
-
   const handleDonation = (e: React.FormEvent) => {
     e.preventDefault();
-    const amount = selectedAmount === "custom" ? customAmount : selectedAmount;
     // Placeholder for payment integration
-    alert(`Thank you for your ${isMonthly ? 'monthly' : 'one-time'} donation of $${amount}! This would integrate with a payment gateway like Stripe.`);
-  };
-
-  const getCurrentImpact = () => {
-    const amount = selectedAmount === "custom" ? customAmount : selectedAmount;
-    return impactData[amount as keyof typeof impactData] || "Every dollar makes a difference in someone's life";
+    alert(`Thank you for your ${isMonthly ? 'monthly' : 'one-time'} donation of ₹${amount}! This would integrate with a payment gateway like RazorPay.`);
   };
 
   return (
@@ -77,49 +60,25 @@ const DonationSection = () => {
                     </div>
                   </div>
 
-                  {/* Amount Selection */}
+                  {/* Amount Input */}
                   <div>
                     <Label className="text-base font-semibold mb-4 block">
-                      Select Donation Amount
+                      Enter Donation Amount (₹)
                     </Label>
-                    <RadioGroup
-                      value={selectedAmount}
-                      onValueChange={setSelectedAmount}
-                      className="grid grid-cols-3 gap-3"
-                    >
-                      {presetAmounts.map((amount) => (
-                        <div key={amount} className="flex items-center space-x-2">
-                          <RadioGroupItem value={amount} id={amount} />
-                          <Label 
-                            htmlFor={amount} 
-                            className="cursor-pointer bg-muted rounded-md px-4 py-2 text-center w-full hover:bg-primary hover:text-primary-foreground transition-colors"
-                          >
-                            ${amount}
-                          </Label>
-                        </div>
-                      ))}
-                      <div className="flex items-center space-x-2 col-span-3">
-                        <RadioGroupItem value="custom" id="custom" />
-                        <div className="flex-1">
-                          <Input
-                            type="number"
-                            placeholder="Custom amount"
-                            value={customAmount}
-                            onChange={(e) => {
-                              setCustomAmount(e.target.value);
-                              setSelectedAmount("custom");
-                            }}
-                            className="w-full"
-                          />
-                        </div>
-                      </div>
-                    </RadioGroup>
+                    <Input
+                      type="number"
+                      placeholder="Enter amount in INR"
+                      value={amount}
+                      onChange={(e) => setAmount(e.target.value)}
+                      className="w-full"
+                      min="1"
+                    />
                   </div>
 
-                  {/* Impact Display */}
+                  {/* Message */}
                   <div className="p-4 bg-success/10 border border-success/20 rounded-lg">
                     <p className="text-sm text-success font-medium">
-                      Your Impact: {getCurrentImpact()}
+                      Every contribution makes a difference in someone's life. Thank you for your support.
                     </p>
                   </div>
 
@@ -168,7 +127,7 @@ const DonationSection = () => {
                   {/* Submit Button */}
                   <Button type="submit" size="lg" className="w-full cta-gradient text-lg">
                     <CreditCard className="w-5 h-5 mr-2" />
-                    Donate ${selectedAmount === "custom" ? customAmount || "0" : selectedAmount}
+                    Donate ₹{amount || "0"}
                     {isMonthly && "/month"}
                   </Button>
 

@@ -26,8 +26,8 @@ const ContactSection = () => {
     {
       icon: <Mail className="w-5 h-5" />,
       label: "Email",
-      value: "contact@hopefoundation.org",
-      link: "mailto:contact@hopefoundation.org"
+      value: "contact@basavayuvabrigade.org",
+      link: "mailto:contact@basavayuvabrigade.org"
     },
     {
       icon: <Phone className="w-5 h-5" />,
@@ -38,7 +38,7 @@ const ContactSection = () => {
     {
       icon: <MapPin className="w-5 h-5" />,
       label: "Address",
-      value: "123 Hope Street, Community Center, New York, NY 10001",
+      value: "123 Basava Circle, PB Road, Davangere, Karnataka 577004",
       link: "https://maps.google.com"
     }
   ];

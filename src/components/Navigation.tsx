@@ -42,7 +42,7 @@ const Navigation = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <h1 className="text-2xl font-bold gradient-text">Hope Foundation</h1>
+            <h1 className="text-2xl font-bold gradient-text">Basava Yuva Brigade</h1>
           </div>
 
           {/* Desktop Navigation */}

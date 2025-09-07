@@ -13,7 +13,7 @@ const EventsSection = () => {
       title: "Community Health Fair",
       date: "March 15, 2024",
       time: "9:00 AM - 4:00 PM",
-      location: "Central Community Center",
+      location: "Davangere Community Center",
       description: "Free health screenings, vaccinations, and wellness workshops for the entire community.",
       volunteers: 25,
       volunteersNeeded: 15
@@ -23,7 +23,7 @@ const EventsSection = () => {
       title: "Educational Workshop Series",
       date: "March 22, 2024",
       time: "2:00 PM - 5:00 PM",
-      location: "Hope Foundation Learning Center",
+      location: "Basava Yuva Brigade Learning Center",
       description: "Skills development workshops covering digital literacy, financial planning, and entrepreneurship.",
       volunteers: 12,
       volunteersNeeded: 8
@@ -33,7 +33,7 @@ const EventsSection = () => {
       title: "Environmental Clean-Up Drive",
       date: "April 5, 2024",
       time: "7:00 AM - 12:00 PM",
-      location: "Riverside Park",
+      location: "Davangere City Park",
       description: "Join us in cleaning our local environment and planting trees for a greener future.",
       volunteers: 45,
       volunteersNeeded: 30
@@ -56,7 +56,7 @@ const EventsSection = () => {
       title: "Children's Education Fair",
       date: "January 20, 2024",
       time: "9:00 AM - 3:00 PM",
-      location: "School District Center",
+      location: "Davangere Education Center",
       description: "Educational resources and scholarship opportunities for underserved children.",
       volunteers: 35,
       impact: "200+ children enrolled in programs"

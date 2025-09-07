@@ -15,7 +15,7 @@ const HeroSection = () => {
       <div className="absolute inset-0">
         <img
           src={heroImage}
-          alt="Hope Foundation - Making a difference together"
+          alt="Basava Yuva Brigade - Making a difference together"
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-primary/80 via-primary/60 to-accent/40"></div>
@@ -30,7 +30,7 @@ const HeroSection = () => {
             <span className="gradient-text">Changing Lives</span>
           </h1>
           <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto leading-relaxed">
-            Join us in creating positive change in communities worldwide. Together, we can make a lasting impact through education, healthcare, and sustainable development.
+            Join us in creating positive change across India. Together, we can empower rural communities through education, healthcare, and sustainable development initiatives.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-slide-up">

@@ -27,22 +27,22 @@ const AboutSection = () => {
 
   const team = [
     {
-      name: "Sarah Johnson",
+      name: "Rajesh Kumar",
       role: "Executive Director",
-      bio: "15+ years in international development and humanitarian work."
+      bio: "15+ years in rural development and social impact initiatives across India."
     },
     {
-      name: "Michael Chen",
+      name: "Priya Sharma",
       role: "Program Manager",
-      bio: "Specialist in education and community development programs."
+      bio: "Specialist in rural education and community empowerment programs."
     },
     {
       name: "Aisha Patel",
       role: "Volunteer Coordinator",
-      bio: "Expert in volunteer management and community engagement."
+      bio: "Expert in grassroots mobilization and community engagement."
     },
     {
-      name: "David Rodriguez",
+      name: "Sanjay Mehta",
       role: "Finance Director",
       bio: "Ensures transparency and accountability in all financial operations."
     }
@@ -54,7 +54,7 @@ const AboutSection = () => {
         {/* Mission & Vision */}
         <div className="text-center mb-16 animate-fade-in">
           <h2 className="text-4xl md:text-5xl font-bold mb-8">
-            About <span className="gradient-text">Hope Foundation</span>
+            About <span className="gradient-text">Basava Yuva Brigade</span>
           </h2>
           <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
             <div>

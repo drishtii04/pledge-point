@@ -8,24 +8,24 @@ const ImpactSection = () => {
   const stories = [
     {
       id: 1,
-      title: "Transforming Education in Rural Communities",
-      description: "Our mobile education program has reached over 15,000 children in remote areas, providing access to quality education and digital literacy training.",
+      title: "Transforming Rural Education in India",
+      description: "Our mobile education program has reached over 15,000 children across rural India, providing access to quality education, digital literacy training, and connecting them to modern opportunities.",
       image: impactEducationImage,
       stats: "15,000+ children reached",
       category: "Education"
     },
     {
       id: 2,
-      title: "Community Health Initiative Success",
-      description: "Through our healthcare outreach programs, we've provided medical care to over 25,000 individuals and established 12 permanent health clinics.",
+      title: "Rural Healthcare Initiative",
+      description: "Through our healthcare outreach programs, we've provided medical care to over 25,000 individuals and established 12 primary healthcare centers across rural villages in India.",
       image: impactCommunityImage,
       stats: "25,000+ people served",
       category: "Healthcare"
     },
     {
       id: 3,
-      title: "Sustainable Development Projects",
-      description: "Clean water access projects have brought safe drinking water to 50+ communities, impacting over 30,000 lives directly.",
+      title: "Village Development Projects",
+      description: "Our clean water and sanitation projects have brought safe drinking water to 50+ villages across India, improving health outcomes and quality of life for over 30,000 people.",
       image: impactCommunityImage,
       stats: "30,000+ lives improved",
       category: "Water & Sanitation"
@@ -34,20 +34,20 @@ const ImpactSection = () => {
 
   const testimonials = [
     {
-      name: "Maria Santos",
-      role: "Community Leader, Guatemala",
-      quote: "Hope Foundation's education program changed everything for our children. Now they have access to computers and are learning skills that will help them build better futures.",
-      avatar: "MS"
+      name: "Meena Devi",
+      role: "Village Sarpanch, Rajasthan",
+      quote: "The education program has transformed our village. Our children now have access to computers and digital learning, opening doors to better opportunities.",
+      avatar: "MD"
     },
     {
-      name: "Dr. James Okonkwo",
-      role: "Local Health Director, Nigeria",
-      quote: "The mobile health clinics have been a game-changer. We can now provide essential healthcare to communities that were previously unreachable.",
-      avatar: "JO"
+      name: "Dr. Anand Kumar",
+      role: "Rural Health Director, Bihar",
+      quote: "The mobile health clinics have revolutionized healthcare delivery in our region. We can now reach remote villages that never had access to proper medical care.",
+      avatar: "AK"
     },
     {
-      name: "Fatima Al-Rashid",
-      role: "Mother of Three, Jordan",
+      name: "Lakshmi Patel",
+      role: "Community Leader, Gujarat",
       quote: "The clean water project in our village meant my daughters could go to school instead of walking hours to fetch water. Thank you for giving them hope.",
       avatar: "FA"
     }

@@ -40,7 +40,7 @@ const Footer = () => {
             <div>
               <h3 className="text-2xl font-bold mb-4 flex items-center">
                 <Heart className="w-6 h-6 mr-2" />
-                Hope Foundation
+                Basava Yuva Brigade
               </h3>
               <p className="text-primary-foreground/80 leading-relaxed">
                 Building hope and changing lives through sustainable community development, 
@@ -51,7 +51,7 @@ const Footer = () => {
             <div className="space-y-3">
               <div className="flex items-center space-x-3 text-sm">
                 <Mail className="w-4 h-4" />
-                <span>contact@hopefoundation.org</span>
+                <span>contact@basavayuvabrigade.org</span>
               </div>
               <div className="flex items-center space-x-3 text-sm">
                 <Phone className="w-4 h-4" />
@@ -59,7 +59,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-3 text-sm">
                 <MapPin className="w-4 h-4" />
-                <span>New York, NY</span>
+                <span>Davangere, Karnataka</span>
               </div>
             </div>
           </div>
@@ -128,7 +128,7 @@ const Footer = () => {
         <div className="py-6 border-t border-primary-foreground/20">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="text-sm text-primary-foreground/80">
-              © 2024 Hope Foundation. All rights reserved. | 
+              © 2024 Basava Yuva Brigade. All rights reserved. | 
               <button className="ml-1 hover:text-primary-foreground transition-colors">
                 Privacy Policy
               </button> | 
