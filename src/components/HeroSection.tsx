@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "./ui/button";
+import { useNavigate } from "react-router-dom";
 
 const HeroSection = () => {
+  const navigate = useNavigate();
+  
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({ behavior: "smooth" });
     }
+  };
+
+  const navigateToPage = (path: string) => {
+    navigate(path);
   };
 
   // Counter Animation Hook
@@ -109,7 +116,7 @@ const HeroSection = () => {
             <Button 
               size="lg" 
               className="group relative px-10 py-4 bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 hover:from-blue-500 hover:via-blue-600 hover:to-indigo-600 text-white rounded-full text-lg font-semibold transform hover:scale-110 hover:-translate-y-1 transition-all duration-500 shadow-xl hover:shadow-2xl hover:shadow-blue-500/50 min-w-[220px] border border-blue-400/30 overflow-hidden"
-              onClick={() => scrollToSection('donate')}
+              onClick={() => navigateToPage('/donate')}
             >
               <span className="relative z-10 flex items-center justify-center gap-3 transition-all duration-300 group-hover:font-bold">
                 Make a Donation
@@ -123,7 +130,7 @@ const HeroSection = () => {
               variant="outline" 
               size="lg" 
               className="group relative px-10 py-4 bg-transparent border-2 border-blue-300/50 hover:border-blue-200 text-white hover:bg-blue-500/30 rounded-full text-lg font-semibold transform hover:scale-110 hover:-translate-y-1 transition-all duration-500 shadow-xl hover:shadow-2xl hover:shadow-blue-400/30 backdrop-blur-md min-w-[220px] overflow-hidden"
-              onClick={() => scrollToSection('volunteer')}
+              onClick={() => navigateToPage('/volunteer')}
             >
               <span className="flex items-center justify-center gap-3 transition-all duration-300 group-hover:font-bold">
                 Volunteer Today

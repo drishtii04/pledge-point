@@ -1,33 +1,54 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Quote, Heart, Zap, Users, GraduationCap } from "lucide-react";
-// Real Indian NGO and rural development images
+// Local impact images
+import learningImage from "@/assets/learning.jpg";
+import ruralHealthCampImage from "@/assets/rural-health-camp.jpg";
+import volunteerTrainingImage from "@/assets/volunteer_training.jpg";
+import skillTrainingImage from "@/assets/skill_training.jpg";
+import waterConservationImage from "@/assets/water-conservation.jpg";
 
 const ImpactSection = () => {
   const stories = [
     {
       id: 1,
-      title: "Transforming Rural Education in India",
-      description: "Our mobile education program has reached over 15,000 children across rural India, providing access to quality education, digital literacy training, and connecting them to modern opportunities.",
-      image: "https://images.unsplash.com/photo-1497486751825-1233686d5d80?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      title: "Digital Learning Center",
+      description: "Our digital learning center provides computer literacy, online resources, and modern teaching methods to bridge the digital divide in rural communities.",
+      image: learningImage,
       stats: "15,000+ children reached",
       category: "Education"
     },
     {
       id: 2,
-      title: "Rural Healthcare Initiative",
-      description: "Through our healthcare outreach programs, we've provided medical care to over 25,000 individuals and established 12 primary healthcare centers across rural villages in India.",
-      image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      title: "Community Health Campus",
+      description: "Our community health campus provides essential medical care and health awareness programs across rural villages through dedicated healthcare facilities.",
+      image: ruralHealthCampImage,
       stats: "25,000+ people served",
       category: "Healthcare"
     },
     {
       id: 3,
-      title: "Village Development Projects",
-      description: "Our clean water and sanitation projects have brought safe drinking water to 50+ villages across India, improving health outcomes and quality of life for over 30,000 people.",
-      image: "https://images.unsplash.com/photo-1541344457960-6c2b638c4e07?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      title: "Water Conservation Project",
+      description: "Our water conservation project implements rainwater harvesting and sustainable water management solutions to ensure clean drinking water for communities.",
+      image: waterConservationImage,
       stats: "30,000+ lives improved",
       category: "Water & Sanitation"
+    },
+    {
+      id: 4,
+      title: "Volunteer Training Program",
+      description: "Our volunteer training program empowers local youth through comprehensive leadership development and community service initiatives.",
+      image: volunteerTrainingImage,
+      stats: "500+ volunteers trained",
+      category: "Capacity Building"
+    },
+    {
+      id: 5,
+      title: "Skill Training Workshop",
+      description: "Our skill training workshops provide vocational training and skill development for rural youth and women, creating employment opportunities.",
+      image: skillTrainingImage,
+      stats: "2,000+ people trained",
+      category: "Livelihood"
     }
   ];
 
@@ -90,7 +111,7 @@ const ImpactSection = () => {
         {/* Success Stories */}
         <div className="mb-16 animate-scale-in">
           <h3 className="text-3xl font-bold text-center mb-12">Success Stories</h3>
-          <div className="grid lg:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {stories.map((story, index) => (
               <Card key={story.id} className="bg-white overflow-hidden group animate-fade-in rounded-3xl shadow-2xl border-0 hover:shadow-3xl transition-all duration-500 hover:scale-105" style={{animationDelay: `${index * 0.3}s`}}>
                 <div className="aspect-video relative overflow-hidden">

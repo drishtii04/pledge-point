@@ -4,8 +4,24 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Quote, Heart, Users, Award, Play, Star } from 'lucide-react';
+import { useNavigate } from "react-router-dom";
+// Local images for stories gallery
+import learningImage from "@/assets/learning.jpg";
+import ruralHealthCampImage from "@/assets/rural-health-camp.jpg";
+import volunteerTrainingImage from "@/assets/volunteer_training.jpg";
+import skillTrainingImage from "@/assets/skill_training.jpg";
+import waterConservationImage from "@/assets/water-conservation.jpg";
+import rameshKumarImage from "@/assets/rameshkumar.jpg";
+import lakshmiImage from "@/assets/lakshmi.jpg";
+import sumaPatelImage from "@/assets/sumapatel.jpg";
 
 const StoriesSection = () => {
+  const navigate = useNavigate();
+  
+  const navigateToPage = (path: string) => {
+    navigate(path);
+  };
+
   // Counter Animation Hook
   const useCountAnimation = (targetValue: number, duration: number = 2000) => {
     const [count, setCount] = useState(0);
@@ -65,39 +81,39 @@ const StoriesSection = () => {
   const galleryImages = [
     {
       id: 'gallery-1',
-      title: 'Digital Learning Centers',
+      title: 'Digital Learning Center',
       caption: 'Modern computer labs bringing technology to rural students',
-      image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+      image: learningImage
     },
     {
       id: 'gallery-2',
-      title: 'Community Health Camps',
+      title: 'Community Health Campus',
       caption: 'Free medical checkups and awareness programs',
-      image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+      image: ruralHealthCampImage
     },
     {
       id: 'gallery-3',
-      title: 'Volunteer Training',
+      title: 'Volunteer Training Program',
       caption: 'Empowering local volunteers with skills and knowledge',
-      image: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+      image: volunteerTrainingImage
     },
     {
       id: 'gallery-4',
-      title: 'Skills Training Workshop',
+      title: 'Skill Training Workshop',
       caption: 'Teaching vocational skills for financial independence',
-      image: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?q=80&w=2074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+      image: skillTrainingImage
     },
     {
       id: 'gallery-5',
       title: 'Water Conservation Project',
       caption: 'Building sustainable water systems for rural communities',
-      image: 'https://images.unsplash.com/photo-1580674684081-7617fbf3d745?q=80&w=2064&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+      image: waterConservationImage
     },
     {
       id: 'gallery-6',
-      title: 'Nutrition Program',
-      caption: 'Ensuring healthy meals for underprivileged children',
-      image: 'https://hallelujahcloud.h4b2.c13.e2-5.dev/2024/02/9r738vJw-nutrition-program-1-768x499.jpg'
+      title: 'Community Stories',
+      caption: 'Real stories from people whose lives we have transformed',
+      image: rameshKumarImage
     }
   ];
 
@@ -105,7 +121,7 @@ const StoriesSection = () => {
     {
       name: "Ramesh Kumar",
       role: "Village Education Volunteer",
-      image: "https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      image: rameshKumarImage,
       story: "I've been volunteering with Basava Yuva Brigade for 3 years now. Coming from a rural background myself, I understand the challenges our children face. Through our digital literacy program, I've seen countless young minds bloom. One particular student, who had never touched a computer before, is now teaching others in her village.",
       location: "Gulbarga, Karnataka",
       impact: "Education",
@@ -115,19 +131,19 @@ const StoriesSection = () => {
     {
       name: "Lakshmi Devi",
       role: "Community Health Worker",
-      image: "https://images.unsplash.com/photo-1559181567-c3190ca9959b?q=80&w=2064&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      image: lakshmiImage,
       story: "As a community health worker associated with Basava Yuva Brigade, I've witnessed remarkable transformations in rural healthcare access. We started with basic health camps, but now we run regular maternal health programs. Last year, we helped over 100 expecting mothers receive proper prenatal care.",
-      location: "Bidar, Karnataka",
+      location: "Belgaum, Karnataka",
       impact: "Healthcare",
       rating: 5,
       featured: false
     },
     {
-      name: "Suresh Patil",
+      name: "Suma Patil",
       role: "Rural Development Officer",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      image: sumaPatelImage,
       story: "Working with Basava Yuva Brigade has been life-changing. Our sustainable farming initiative has helped 50 farmers switch to organic methods. The pride in their eyes when they harvest chemical-free crops is priceless. We're not just changing practices; we're preserving our soil for future generations.",
-      location: "Belgaum, Karnataka",
+      location: "Dharwad, Karnataka",
       impact: "Agriculture",
       rating: 5,
       featured: false
@@ -315,6 +331,7 @@ const StoriesSection = () => {
                       <Button 
                         variant="outline" 
                         className="w-full transition-all duration-300 rounded-xl font-semibold hover:bg-blue-600 hover:text-white hover:border-blue-600 hover:scale-105 hover:shadow-lg hover:shadow-blue-500/25 group/btn"
+                        onClick={() => navigateToPage('/impact')}
                       >
                         <Play className="w-4 h-4 mr-2 transition-transform duration-300 group-hover/btn:scale-110 group-hover/btn:rotate-12" />
                         <span className="transition-all duration-300 group-hover/btn:font-bold">Read Full Story</span>
@@ -407,10 +424,16 @@ const StoriesSection = () => {
             Your support can transform lives and create lasting change in communities across Karnataka.
           </p>
           <div className="flex flex-col sm:flex-row gap-6 justify-center px-6">
-            <Button className="px-10 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-full text-lg font-semibold transition-all duration-300 hover:scale-105 shadow-xl">
+            <Button 
+              className="px-10 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-full text-lg font-semibold transition-all duration-300 hover:scale-105 shadow-xl"
+              onClick={() => navigateToPage('/contact')}
+            >
               Share Your Story
             </Button>
-            <Button className="px-10 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-full text-lg font-semibold transition-all duration-300 hover:scale-105 shadow-xl">
+            <Button 
+              className="px-10 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-full text-lg font-semibold transition-all duration-300 hover:scale-105 shadow-xl"
+              onClick={() => navigateToPage('/impact')}
+            >
               View All Stories
             </Button>
           </div>
