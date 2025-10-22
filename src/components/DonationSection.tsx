@@ -6,10 +6,14 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Heart, CreditCard, Shield, Award } from "lucide-react";
+import { addDonation } from "@/lib/donationService";
+import { useToast } from "@/hooks/use-toast";
 
 const DonationSection = () => {
+  const { toast } = useToast();
   const [amount, setAmount] = useState("");
   const [isMonthly, setIsMonthly] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [donorInfo, setDonorInfo] = useState({
     name: "",
     email: "",
@@ -17,10 +21,51 @@ const DonationSection = () => {
     anonymous: false
   });
 
-  const handleDonation = (e: React.FormEvent) => {
+  const handleDonation = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Placeholder for payment integration
-    alert(`Thank you for your ${isMonthly ? 'monthly' : 'one-time'} donation of ₹${amount}! This would integrate with a payment gateway like RazorPay.`);
+    setIsSubmitting(true);
+
+    try {
+      // Prepare donation data for Firebase
+      const donationData = {
+        donorName: donorInfo.anonymous ? "Anonymous Donor" : donorInfo.name,
+        email: donorInfo.anonymous ? "" : donorInfo.email,
+        phone: donorInfo.anonymous ? "" : donorInfo.phone,
+        amount: parseFloat(amount),
+        donationType: isMonthly ? 'monthly' as const : 'one-time' as const,
+        paymentMethod: 'pending', // Will be updated after payment gateway integration
+        message: `Donation via website - ${isMonthly ? 'Monthly' : 'One-time'} contribution`,
+        isAnonymous: donorInfo.anonymous,
+      };
+
+      // Submit to Firebase
+      await addDonation(donationData);
+
+      toast({
+        title: "🎉 Donation Recorded!",
+        description: `Thank you for your ${isMonthly ? 'monthly' : 'one-time'} donation of ₹${amount}! This would integrate with RazorPay for actual payment processing.`,
+      });
+
+      // Reset form
+      setAmount("");
+      setIsMonthly(false);
+      setDonorInfo({
+        name: "",
+        email: "",
+        phone: "",
+        anonymous: false
+      });
+
+    } catch (error) {
+      console.error("Error recording donation:", error);
+      toast({
+        title: "Donation Error",
+        description: "There was an issue recording your donation. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -125,10 +170,9 @@ const DonationSection = () => {
                   </div>
 
                   {/* Submit Button */}
-                  <Button type="submit" size="lg" className="w-full cta-gradient text-lg">
+                  <Button type="submit" size="lg" className="w-full cta-gradient text-lg" disabled={isSubmitting}>
                     <CreditCard className="w-5 h-5 mr-2" />
-                    Donate ₹{amount || "0"}
-                    {isMonthly && "/month"}
+                    {isSubmitting ? "Recording Donation..." : `Donate ₹${amount || "0"}${isMonthly ? "/month" : ""}`}
                   </Button>
 
                   {/* Security Note */}

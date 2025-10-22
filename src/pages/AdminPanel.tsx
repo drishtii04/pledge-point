@@ -37,7 +37,7 @@ const AdminPanel = () => {
     fetchData();
   }, []);
 
-  const formatDate = (timestamp: any) => {
+  const formatDate = (timestamp: { seconds: number } | null) => {
     if (!timestamp) return 'No date';
     return new Date(timestamp.seconds * 1000).toLocaleDateString();
   };
