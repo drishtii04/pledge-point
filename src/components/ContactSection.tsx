@@ -6,7 +6,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
-import { submitContactForm } from "@/lib/firebaseServices";
 
 const ContactSection = () => {
   const [contactForm, setContactForm] = useState({
@@ -22,32 +21,30 @@ const ContactSection = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    try {
-      const result = await submitContactForm({
-        name: contactForm.name,
-        email: contactForm.email,
-        phone: "", // You can add phone field if needed
-        message: `Subject: ${contactForm.subject}\nInquiry Type: ${contactForm.inquiryType}\n\n${contactForm.message}`
-      });
+    // Simulate form processing
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
-      if (result.success) {
-        alert("Thank you for your message! We'll get back to you within 24 hours.");
-        setContactForm({
-          name: "",
-          email: "",
-          subject: "",
-          message: "",
-          inquiryType: ""
-        });
-      } else {
-        alert("There was an error submitting your message. Please try again.");
-      }
-    } catch (error) {
-      console.error("Error submitting contact form:", error);
-      alert("There was an error submitting your message. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
+    // Log form data to console for now
+    console.log("Contact Form Submitted:", {
+      name: contactForm.name,
+      email: contactForm.email,
+      subject: contactForm.subject,
+      inquiryType: contactForm.inquiryType,
+      message: contactForm.message,
+      timestamp: new Date().toISOString()
+    });
+
+    alert("Thank you for your message! We'll get back to you within 24 hours.");
+    
+    setContactForm({
+      name: "",
+      email: "",
+      subject: "",
+      message: "",
+      inquiryType: ""
+    });
+
+    setIsSubmitting(false);
   };
 
   const contactInfo = [

@@ -13,12 +13,6 @@ import Impact from "./pages/Impact";
 import Contact from "./pages/Contact";
 import Donate from "./pages/Donate";
 import Volunteer from "./pages/Volunteer";
-import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
-import FirebaseTest from "./components/FirebaseTest";
-import DatabaseViewer from "./components/DatabaseViewer";
-import QuickTest from "./components/QuickTest";
-import EmulatorDebug from "./components/EmulatorDebug";
-import FirestoreViewer from "./components/FirestoreViewer";
 import FloatingActionButtons from "./components/FloatingActionButtons";
 import ScrollProgressIndicator from "./components/ScrollProgressIndicator";
 
@@ -42,12 +36,7 @@ const App = () => (
               <Route path="/contact" element={<Contact />} />
               <Route path="/donate" element={<Donate />} />
               <Route path="/volunteer" element={<Volunteer />} />
-              <Route path="/admin" element={<ProtectedAdminRoute />} />
-              <Route path="/test-firebase" element={<FirebaseTest />} />
-              <Route path="/database" element={<DatabaseViewer />} />
-              <Route path="/firestore" element={<FirestoreViewer />} />
-              <Route path="/quick-test" element={<QuickTest />} />
-              <Route path="/debug" element={<EmulatorDebug />} />
+
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

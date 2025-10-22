@@ -8,9 +8,7 @@
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "emulators": "firebase emulators:start --only firestore",
-    "emulators:ui": "firebase emulators:start"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -47,7 +45,6 @@
     "cmdk": "^1.1.1",
     "date-fns": "^3.6.0",
     "embla-carousel-react": "^8.6.0",
-    "firebase": "^12.3.0",
     "framer-motion": "^12.23.12",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.462.0",

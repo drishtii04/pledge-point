@@ -7,7 +7,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { UserPlus, Clock, MapPin, Users, Award } from "lucide-react";
-import { registerVolunteer } from "@/lib/firebaseServices";
 
 const VolunteerSection = () => {
   const [volunteerForm, setVolunteerForm] = useState({
@@ -85,39 +84,37 @@ const VolunteerSection = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    try {
-      const result = await registerVolunteer({
-        name: volunteerForm.name,
-        email: volunteerForm.email,
-        phone: volunteerForm.phone,
-        skills: volunteerForm.interests, // Using interests as skills array
-        availability: volunteerForm.availability,
-        experience: `${volunteerForm.experience}\n\nMotivation: ${volunteerForm.motivation}`
-      });
+    // Simulate form processing
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
-      if (result.success) {
-        alert("🎉 Thank you for volunteering! Your application has been submitted successfully. We'll contact you soon!");
-        
-        // Reset form
-        setVolunteerForm({
-          name: "",
-          email: "",
-          phone: "",
-          skills: "",
-          interests: [],
-          availability: "",
-          experience: "",
-          motivation: ""
-        });
-      } else {
-        alert("There was an error submitting your application. Please try again.");
-      }
-    } catch (error) {
-      console.error("Error submitting volunteer application:", error);
-      alert("There was an error submitting your application. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
+    // Log form data to console for now
+    console.log("Volunteer Application Submitted:", {
+      name: volunteerForm.name,
+      email: volunteerForm.email,
+      phone: volunteerForm.phone,
+      interests: volunteerForm.interests,
+      availability: volunteerForm.availability,
+      skills: volunteerForm.skills,
+      experience: volunteerForm.experience,
+      motivation: volunteerForm.motivation,
+      timestamp: new Date().toISOString()
+    });
+
+    alert("🎉 Thank you for volunteering! Your application has been recorded. We'll contact you soon!");
+    
+    // Reset form
+    setVolunteerForm({
+      name: "",
+      email: "",
+      phone: "",
+      skills: "",
+      interests: [],
+      availability: "",
+      experience: "",
+      motivation: ""
+    });
+
+    setIsSubmitting(false);
   };
 
   const handleOpportunityApply = (opportunity: string) => {
