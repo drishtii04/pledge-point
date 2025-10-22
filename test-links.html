@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Backend Test Links</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .link-box { margin: 10px 0; padding: 10px; border: 1px solid #ddd; }
+        .working { background-color: #d4edda; }
+        .not-working { background-color: #f8d7da; }
+    </style>
+</head>
+<body>
+    <h1>🔥 Firebase Backend Test Links</h1>
+    
+    <div class="link-box">
+        <h3>Your App Links:</h3>
+        <ul>
+            <li><a href="http://localhost:3002" target="_blank">🏠 Main App (http://localhost:3002)</a></li>
+            <li><a href="http://localhost:3002/admin" target="_blank">👨‍💼 Admin Panel (http://localhost:3002/admin)</a></li>
+            <li><a href="http://localhost:3002/test-firebase" target="_blank">🧪 Firebase Test (http://localhost:3002/test-firebase)</a></li>
+            <li><a href="http://localhost:3002/contact" target="_blank">📧 Contact Form (http://localhost:3002/contact)</a></li>
+        </ul>
+    </div>
+    
+    <div class="link-box">
+        <h3>Firebase Emulator Links:</h3>
+        <ul>
+            <li><a href="http://localhost:4000" target="_blank">🔥 Emulator UI (http://localhost:4000)</a></li>
+            <li><a href="http://localhost:4000/firestore" target="_blank">📊 Firestore Data (http://localhost:4000/firestore)</a></li>
+            <li><a href="http://127.0.0.1:4000" target="_blank">🔥 Emulator UI Alt (http://127.0.0.1:4000)</a></li>
+        </ul>
+    </div>
+    
+    <script>
+        // Test all links automatically
+        setTimeout(() => {
+            const links = document.querySelectorAll('a');
+            links.forEach(link => {
+                fetch(link.href)
+                    .then(response => {
+                        if (response.ok) {
+                            link.parentElement.style.backgroundColor = '#d4edda';
+                            link.parentElement.innerHTML += ' ✅';
+                        } else {
+                            link.parentElement.style.backgroundColor = '#f8d7da';
+                            link.parentElement.innerHTML += ' ❌';
+                        }
+                    })
+                    .catch(() => {
+                        link.parentElement.style.backgroundColor = '#f8d7da';
+                        link.parentElement.innerHTML += ' ❌';
+                    });
+            });
+        }, 1000);
+    </script>
+</body>
+</html>

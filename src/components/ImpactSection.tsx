@@ -1,8 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Quote, Heart, Zap, Users, GraduationCap } from "lucide-react";
-import impactEducationImage from "@/assets/impact-education.jpg";
-import impactCommunityImage from "@/assets/impact-community.jpg";
+// Real Indian NGO and rural development images
 
 const ImpactSection = () => {
   const stories = [
@@ -10,7 +9,7 @@ const ImpactSection = () => {
       id: 1,
       title: "Transforming Rural Education in India",
       description: "Our mobile education program has reached over 15,000 children across rural India, providing access to quality education, digital literacy training, and connecting them to modern opportunities.",
-      image: impactEducationImage,
+      image: "https://images.unsplash.com/photo-1497486751825-1233686d5d80?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       stats: "15,000+ children reached",
       category: "Education"
     },
@@ -18,7 +17,7 @@ const ImpactSection = () => {
       id: 2,
       title: "Rural Healthcare Initiative",
       description: "Through our healthcare outreach programs, we've provided medical care to over 25,000 individuals and established 12 primary healthcare centers across rural villages in India.",
-      image: impactCommunityImage,
+      image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       stats: "25,000+ people served",
       category: "Healthcare"
     },
@@ -26,7 +25,7 @@ const ImpactSection = () => {
       id: 3,
       title: "Village Development Projects",
       description: "Our clean water and sanitation projects have brought safe drinking water to 50+ villages across India, improving health outcomes and quality of life for over 30,000 people.",
-      image: impactCommunityImage,
+      image: "https://images.unsplash.com/photo-1541344457960-6c2b638c4e07?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       stats: "30,000+ lives improved",
       category: "Water & Sanitation"
     }
@@ -74,9 +73,9 @@ const ImpactSection = () => {
         </div>
 
         {/* Impact Numbers */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-16 animate-slide-up">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-20 animate-slide-up px-4">
           {impactNumbers.map((item, index) => (
-            <Card key={index} className="card-elevated text-center p-6">
+            <Card key={index} className="bg-white text-center p-8 animate-fade-in rounded-3xl shadow-2xl border-0 hover:shadow-3xl transition-all duration-500 hover:scale-105" style={{animationDelay: `${index * 0.2}s`}}>
               <CardContent className="flex flex-col items-center space-y-3">
                 <div className={`${item.color} p-3 rounded-full bg-muted`}>
                   {item.icon}
@@ -92,13 +91,13 @@ const ImpactSection = () => {
         <div className="mb-16 animate-scale-in">
           <h3 className="text-3xl font-bold text-center mb-12">Success Stories</h3>
           <div className="grid lg:grid-cols-3 gap-8">
-            {stories.map((story) => (
-              <Card key={story.id} className="card-elevated overflow-hidden">
+            {stories.map((story, index) => (
+              <Card key={story.id} className="bg-white overflow-hidden group animate-fade-in rounded-3xl shadow-2xl border-0 hover:shadow-3xl transition-all duration-500 hover:scale-105" style={{animationDelay: `${index * 0.3}s`}}>
                 <div className="aspect-video relative overflow-hidden">
                   <img 
                     src={story.image} 
                     alt={story.title}
-                    className="w-full h-full object-cover transition-transform hover:scale-105"
+                    className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
                   />
                   <div className="absolute top-4 left-4">
                     <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-medium">

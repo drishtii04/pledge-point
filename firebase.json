@@ -1,0 +1,18 @@
+{
+  "emulators": {
+    "firestore": {
+      "port": 8081
+    },
+    "ui": {
+      "enabled": true,
+      "port": 4001
+    },
+    "singleProjectMode": true
+  },
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "projects": {
+    "default": "basava-yuva-brigade"
+  }
+}

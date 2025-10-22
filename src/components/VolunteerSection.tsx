@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { UserPlus, Clock, MapPin, Users, Award } from "lucide-react";
+import { registerVolunteer } from "@/lib/firebaseServices";
 
 const VolunteerSection = () => {
   const [volunteerForm, setVolunteerForm] = useState({
@@ -19,6 +20,7 @@ const VolunteerSection = () => {
     experience: "",
     motivation: ""
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const opportunities = [
     {
@@ -79,10 +81,43 @@ const VolunteerSection = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Placeholder for volunteer registration
-    alert("Thank you for your interest in volunteering! Your application has been submitted. This would integrate with a backend system for processing.");
+    setIsSubmitting(true);
+
+    try {
+      const result = await registerVolunteer({
+        name: volunteerForm.name,
+        email: volunteerForm.email,
+        phone: volunteerForm.phone,
+        skills: volunteerForm.interests, // Using interests as skills array
+        availability: volunteerForm.availability,
+        experience: `${volunteerForm.experience}\n\nMotivation: ${volunteerForm.motivation}`
+      });
+
+      if (result.success) {
+        alert("🎉 Thank you for volunteering! Your application has been submitted successfully. We'll contact you soon!");
+        
+        // Reset form
+        setVolunteerForm({
+          name: "",
+          email: "",
+          phone: "",
+          skills: "",
+          interests: [],
+          availability: "",
+          experience: "",
+          motivation: ""
+        });
+      } else {
+        alert("There was an error submitting your application. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error submitting volunteer application:", error);
+      alert("There was an error submitting your application. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleOpportunityApply = (opportunity: string) => {
@@ -209,8 +244,8 @@ const VolunteerSection = () => {
                     />
                   </div>
 
-                  <Button type="submit" size="lg" className="w-full cta-gradient">
-                    Submit Application
+                  <Button type="submit" size="lg" className="w-full cta-gradient" disabled={isSubmitting}>
+                    {isSubmitting ? "Submitting..." : "Submit Application"}
                   </Button>
                 </form>
               </CardContent>

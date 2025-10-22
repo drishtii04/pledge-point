@@ -31,16 +31,19 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-primary text-primary-foreground">
-      <div className="container mx-auto px-4">
+    <footer className="relative bg-gradient-to-br from-primary via-primary/95 to-accent text-primary-foreground overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 bg-mesh opacity-30"></div>
+      
+      <div className="container mx-auto px-4 relative z-10">
         {/* Main Footer Content */}
         <div className="py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Organization Info */}
           <div className="space-y-6">
             <div>
-              <h3 className="text-2xl font-bold mb-4 flex items-center">
-                <Heart className="w-6 h-6 mr-2" />
-                Basava Yuva Brigade
+              <h3 className="text-2xl font-bold mb-4 flex items-center group cursor-pointer hover:scale-105 transition-all duration-300">
+                <Heart className="w-6 h-6 mr-2 transition-all duration-300 group-hover:scale-125 group-hover:text-red-300 group-hover:animate-pulse" />
+                <span className="group-hover:text-blue-200 transition-colors duration-300">Basava Yuva Brigade</span>
               </h3>
               <p className="text-primary-foreground/80 leading-relaxed">
                 Building hope and changing lives through sustainable community development, 
@@ -49,17 +52,17 @@ const Footer = () => {
             </div>
             
             <div className="space-y-3">
-              <div className="flex items-center space-x-3 text-sm">
-                <Mail className="w-4 h-4" />
-                <span>contact@basavayuvabrigade.org</span>
+              <div className="flex items-center space-x-3 text-sm group hover:bg-white/10 rounded-lg p-2 -m-2 transition-all duration-300 cursor-pointer hover:scale-105">
+                <Mail className="w-4 h-4 transition-all duration-300 group-hover:scale-125 group-hover:text-blue-300" />
+                <span className="group-hover:text-white group-hover:font-semibold transition-all duration-300">contact@basavayuvabrigade.org</span>
               </div>
-              <div className="flex items-center space-x-3 text-sm">
-                <Phone className="w-4 h-4" />
-                <span>+1 (555) 123-4567</span>
+              <div className="flex items-center space-x-3 text-sm group hover:bg-white/10 rounded-lg p-2 -m-2 transition-all duration-300 cursor-pointer hover:scale-105">
+                <Phone className="w-4 h-4 transition-all duration-300 group-hover:scale-125 group-hover:text-green-300 group-hover:rotate-12" />
+                <span className="group-hover:text-white group-hover:font-semibold transition-all duration-300">+1 (555) 123-4567</span>
               </div>
-              <div className="flex items-center space-x-3 text-sm">
-                <MapPin className="w-4 h-4" />
-                <span>Davangere, Karnataka</span>
+              <div className="flex items-center space-x-3 text-sm group hover:bg-white/10 rounded-lg p-2 -m-2 transition-all duration-300 cursor-pointer hover:scale-105">
+                <MapPin className="w-4 h-4 transition-all duration-300 group-hover:scale-125 group-hover:text-red-300 group-hover:bounce" />
+                <span className="group-hover:text-white group-hover:font-semibold transition-all duration-300">Davangere, Karnataka</span>
               </div>
             </div>
           </div>
@@ -72,9 +75,10 @@ const Footer = () => {
                 <li key={index}>
                   <button
                     onClick={link.action}
-                    className="text-primary-foreground/80 hover:text-primary-foreground transition-colors text-sm"
+                    className="text-primary-foreground/80 hover:text-primary-foreground transition-all duration-300 text-sm hover:scale-105 hover:translate-x-2 hover:font-semibold group relative"
                   >
-                    {link.label}
+                    <span className="group-hover:text-blue-200 transition-colors duration-300">{link.label}</span>
+                    <span className="absolute -left-2 opacity-0 group-hover:opacity-100 transition-all duration-300 text-blue-300">→</span>
                   </button>
                 </li>
               ))}
@@ -89,9 +93,10 @@ const Footer = () => {
                 <li key={index}>
                   <button
                     onClick={link.action}
-                    className="text-primary-foreground/80 hover:text-primary-foreground transition-colors text-sm"
+                    className="text-primary-foreground/80 hover:text-primary-foreground transition-all duration-300 text-sm hover:scale-105 hover:translate-x-2 hover:font-semibold group relative"
                   >
-                    {link.label}
+                    <span className="group-hover:text-green-200 transition-colors duration-300">{link.label}</span>
+                    <span className="absolute -left-2 opacity-0 group-hover:opacity-100 transition-all duration-300 text-green-300">→</span>
                   </button>
                 </li>
               ))}
