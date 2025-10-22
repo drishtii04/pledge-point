@@ -8,6 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Heart, CreditCard, Shield, Award } from "lucide-react";
 import { addDonation } from "@/lib/donationService";
 import { useToast } from "@/hooks/use-toast";
+import { sendDonationNotificationEmail } from "@/lib/emailService";
 
 const DonationSection = () => {
   const { toast } = useToast();
@@ -41,10 +42,31 @@ const DonationSection = () => {
       // Submit to Firebase
       await addDonation(donationData);
 
-      toast({
-        title: "🎉 Donation Recorded!",
-        description: `Thank you for your ${isMonthly ? 'monthly' : 'one-time'} donation of ₹${amount}! This would integrate with RazorPay for actual payment processing.`,
-      });
+      // Send email notification (run in background)
+      try {
+        await sendDonationNotificationEmail({
+          donor_name: donorInfo.anonymous ? 'Anonymous Donor' : donorInfo.name,
+          donor_email: donorInfo.anonymous ? '' : donorInfo.email,
+          donation_amount: parseFloat(amount),
+          donation_type: isMonthly ? 'monthly' : 'one-time',
+          is_anonymous: donorInfo.anonymous,
+          from_name: donorInfo.anonymous ? 'Anonymous Donor' : donorInfo.name,
+          from_email: donorInfo.anonymous ? 'no-reply@basava-yuva-brigade.org' : donorInfo.email,
+          subject: 'New Donation Received',
+          message: `Donation of ₹${amount} received via website`,
+        });
+
+        toast({
+          title: "🎉 Donation Recorded!",
+          description: `Thank you for your ${isMonthly ? 'monthly' : 'one-time'} donation of ₹${amount}! Confirmation emails have been sent. This would integrate with RazorPay for actual payment processing.`,
+        });
+      } catch (emailError) {
+        console.error('Email notification error (non-critical):', emailError);
+        toast({
+          title: "🎉 Donation Recorded!",
+          description: `Thank you for your ${isMonthly ? 'monthly' : 'one-time'} donation of ₹${amount}! This would integrate with RazorPay for actual payment processing. (Note: Email notifications may have failed)`,
+        });
+      }
 
       // Reset form
       setAmount("");

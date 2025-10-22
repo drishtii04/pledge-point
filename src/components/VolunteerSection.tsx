@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { UserPlus, Clock, MapPin, Users, Award } from "lucide-react";
 import { addVolunteerRegistration } from "@/lib/volunteerService";
 import { useToast } from "@/hooks/use-toast";
+import { sendVolunteerConfirmationEmail } from "@/lib/emailService";
 
 const VolunteerSection = () => {
   const { toast } = useToast();
@@ -88,23 +89,75 @@ const VolunteerSection = () => {
     setIsSubmitting(true);
 
     try {
+      // Validate form data
+      if (!volunteerForm.name.trim()) {
+        throw new Error("Name is required");
+      }
+      if (!volunteerForm.email.trim()) {
+        throw new Error("Email is required");
+      }
+      if (!volunteerForm.availability) {
+        throw new Error("Availability is required");
+      }
+
       // Prepare volunteer data for Firebase
       const volunteerData = {
-        name: volunteerForm.name,
-        email: volunteerForm.email,
-        phone: volunteerForm.phone,
-        skills: `${volunteerForm.skills} | Experience: ${volunteerForm.experience} | Interests: ${volunteerForm.interests.join(', ')}`,
+        name: volunteerForm.name.trim(),
+        email: volunteerForm.email.trim(),
+        phone: volunteerForm.phone.trim() || "",
+        skills: `${volunteerForm.skills || "No specific skills mentioned"} | Experience: ${volunteerForm.experience || "No experience mentioned"} | Interests: ${volunteerForm.interests.length > 0 ? volunteerForm.interests.join(', ') : "No interests specified"}`,
         availability: volunteerForm.availability,
-        message: volunteerForm.motivation || "No additional message provided"
+        message: volunteerForm.motivation?.trim() || "No additional message provided"
       };
 
       // Submit to Firebase
-      await addVolunteerRegistration(volunteerData);
+      const result = await addVolunteerRegistration(volunteerData);
 
-      toast({
-        title: "🎉 Registration Successful!",
-        description: "Thank you for volunteering! We'll contact you soon with next steps.",
+      // Send email notifications (run in background)
+      console.log('🚀 Starting volunteer email sending process...');
+      console.log('📋 Volunteer data check:', {
+        name: volunteerData.name,
+        email: volunteerData.email,
+        phone: volunteerData.phone
       });
+
+      // Validate email before sending
+      if (!volunteerData.email || volunteerData.email.trim() === '') {
+        console.error('❌ Volunteer email is empty or invalid');
+        toast({
+          title: "🎉 Registration Successful!",
+          description: "Thank you for volunteering! We'll contact you soon with next steps. (Email confirmation unavailable - no email provided)",
+        });
+        return;
+      }
+
+      try {
+        console.log('📧 Sending volunteer confirmation email using template_g7rqzev...');
+        // Send confirmation email to volunteer using the working template
+        await sendVolunteerConfirmationEmail({
+          volunteer_name: volunteerData.name,
+          volunteer_email: volunteerData.email,
+          volunteer_skills: volunteerData.skills,
+          volunteer_availability: volunteerData.availability,
+          volunteer_message: volunteerData.message,
+        });
+
+        console.log('✅ Volunteer confirmation email sent successfully!');
+        toast({
+          title: "🎉 Registration Successful! 📧",
+          description: "Thank you for volunteering! A confirmation email has been sent to you. We'll contact you soon with next steps.",
+        });
+        
+      } catch (emailError) {
+        console.error('❌ Volunteer email failed:', emailError);
+        toast({
+          title: "🎉 Registration Successful!",
+          description: "Thank you for volunteering! We'll contact you soon with next steps. (Email confirmation temporarily unavailable)",
+        });
+      }
+
+      // Note: Admin notification disabled until volunteer templates are created
+      console.log('ℹ️ Admin volunteer notification skipped - templates not configured yet');
       
       // Reset form
       setVolunteerForm({
@@ -120,9 +173,18 @@ const VolunteerSection = () => {
 
     } catch (error) {
       console.error("Error submitting volunteer application:", error);
+      
+      let errorMessage = "There was an issue submitting your application. Please try again.";
+      
+      if (error instanceof Error) {
+        errorMessage = error.message.includes("Firebase") 
+          ? "Database connection issue. Please check your internet connection and try again."
+          : error.message;
+      }
+
       toast({
         title: "Registration Error",
-        description: "There was an issue submitting your application. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -319,6 +381,7 @@ const VolunteerSection = () => {
             ))}
           </div>
         </div>
+
       </div>
     </section>
   );

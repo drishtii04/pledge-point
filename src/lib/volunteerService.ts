@@ -30,10 +30,9 @@ export const addVolunteerRegistration = async (volunteerData: Omit<VolunteerData
       ...volunteerData,
       createdAt: Timestamp.now()
     });
-    console.log('Volunteer registered with ID: ', docRef.id);
     return { success: true, id: docRef.id };
   } catch (error) {
-    console.error('Error adding volunteer: ', error);
+    console.error('Error adding volunteer:', error);
     throw error;
   }
 };

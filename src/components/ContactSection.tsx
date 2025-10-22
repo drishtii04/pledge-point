@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
 import { addContactMessage } from "@/lib/contactService";
 import { useToast } from "@/hooks/use-toast";
+import { sendContactNotificationEmail, sendContactAutoReplyEmail } from "@/lib/emailService";
 
 const ContactSection = () => {
   const { toast } = useToast();
@@ -36,10 +37,55 @@ const ContactSection = () => {
       // Submit to Firebase
       await addContactMessage(contactData);
 
-      toast({
-        title: "Message Sent Successfully!",
-        description: "Thank you for your message! We'll get back to you within 24 hours.",
+      // Send email notifications (run in background)
+      console.log('🚀 Starting email sending process...');
+      console.log('📋 Form data check:', {
+        name: contactForm.name,
+        email: contactForm.email,
+        subject: contactForm.subject,
+        message: contactForm.message
       });
+      
+      // Validate email before sending
+      if (!contactForm.email || contactForm.email.trim() === '') {
+        console.error('❌ Email is empty or invalid');
+        toast({
+          title: "Message Sent Successfully!",
+          description: "Thank you for your message! We'll get back to you within 24 hours. (Email confirmation unavailable - no email provided)",
+        });
+        return;
+      }
+      
+      try {
+        console.log('📧 Sending auto-reply email (template_i9xug9o)...');
+        // Send auto-reply to user (only configured template)
+        await sendContactAutoReplyEmail({
+          contact_name: contactForm.name,
+          contact_email: contactForm.email,
+          contact_subject: contactForm.subject,
+          contact_message: contactForm.message,
+          from_name: 'Basava Yuva Brigade',
+          from_email: 'no-reply@basava-yuva-brigade.org',
+          subject: 'Thank you for contacting us',
+          message: 'We have received your message and will respond soon.',
+        });
+        
+        console.log('✅ Auto-reply email sent successfully!');
+        toast({
+          title: "Message Sent Successfully! 📧",
+          description: "Thank you for your message! A confirmation email has been sent to you. We'll get back to you within 24 hours.",
+        });
+        
+      } catch (emailError) {
+        console.error('❌ Auto-reply email failed:', emailError);
+        toast({
+          title: "Message Sent Successfully!",
+          description: "Thank you for your message! We'll get back to you within 24 hours. (Email confirmation temporarily unavailable)",
+        });
+      }
+
+      // Note: Admin notification disabled until template_contact_notification is created
+      console.log('ℹ️ Admin notification skipped - template not configured yet');
       
       setContactForm({
         name: "",
