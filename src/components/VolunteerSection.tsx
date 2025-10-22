@@ -7,8 +7,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { UserPlus, Clock, MapPin, Users, Award } from "lucide-react";
+import { addVolunteerRegistration } from "@/lib/volunteerService";
+import { useToast } from "@/hooks/use-toast";
 
 const VolunteerSection = () => {
+  const { toast } = useToast();
   const [volunteerForm, setVolunteerForm] = useState({
     name: "",
     email: "",
@@ -84,37 +87,47 @@ const VolunteerSection = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate form processing
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    try {
+      // Prepare volunteer data for Firebase
+      const volunteerData = {
+        name: volunteerForm.name,
+        email: volunteerForm.email,
+        phone: volunteerForm.phone,
+        skills: `${volunteerForm.skills} | Experience: ${volunteerForm.experience} | Interests: ${volunteerForm.interests.join(', ')}`,
+        availability: volunteerForm.availability,
+        message: volunteerForm.motivation || "No additional message provided"
+      };
 
-    // Log form data to console for now
-    console.log("Volunteer Application Submitted:", {
-      name: volunteerForm.name,
-      email: volunteerForm.email,
-      phone: volunteerForm.phone,
-      interests: volunteerForm.interests,
-      availability: volunteerForm.availability,
-      skills: volunteerForm.skills,
-      experience: volunteerForm.experience,
-      motivation: volunteerForm.motivation,
-      timestamp: new Date().toISOString()
-    });
+      // Submit to Firebase
+      await addVolunteerRegistration(volunteerData);
 
-    alert("🎉 Thank you for volunteering! Your application has been recorded. We'll contact you soon!");
-    
-    // Reset form
-    setVolunteerForm({
-      name: "",
-      email: "",
-      phone: "",
-      skills: "",
-      interests: [],
-      availability: "",
-      experience: "",
-      motivation: ""
-    });
+      toast({
+        title: "🎉 Registration Successful!",
+        description: "Thank you for volunteering! We'll contact you soon with next steps.",
+      });
+      
+      // Reset form
+      setVolunteerForm({
+        name: "",
+        email: "",
+        phone: "",
+        skills: "",
+        interests: [],
+        availability: "",
+        experience: "",
+        motivation: ""
+      });
 
-    setIsSubmitting(false);
+    } catch (error) {
+      console.error("Error submitting volunteer application:", error);
+      toast({
+        title: "Registration Error",
+        description: "There was an issue submitting your application. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleOpportunityApply = (opportunity: string) => {

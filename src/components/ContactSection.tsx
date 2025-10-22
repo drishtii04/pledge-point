@@ -6,8 +6,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
+import { addContactMessage } from "@/lib/contactService";
+import { useToast } from "@/hooks/use-toast";
 
 const ContactSection = () => {
+  const { toast } = useToast();
   const [contactForm, setContactForm] = useState({
     name: "",
     email: "",
@@ -21,30 +24,41 @@ const ContactSection = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate form processing
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    try {
+      // Prepare contact data for Firebase
+      const contactData = {
+        name: contactForm.name,
+        email: contactForm.email,
+        subject: contactForm.inquiryType ? `${contactForm.subject} (${contactForm.inquiryType})` : contactForm.subject,
+        message: contactForm.message
+      };
 
-    // Log form data to console for now
-    console.log("Contact Form Submitted:", {
-      name: contactForm.name,
-      email: contactForm.email,
-      subject: contactForm.subject,
-      inquiryType: contactForm.inquiryType,
-      message: contactForm.message,
-      timestamp: new Date().toISOString()
-    });
+      // Submit to Firebase
+      await addContactMessage(contactData);
 
-    alert("Thank you for your message! We'll get back to you within 24 hours.");
-    
-    setContactForm({
-      name: "",
-      email: "",
-      subject: "",
-      message: "",
-      inquiryType: ""
-    });
+      toast({
+        title: "Message Sent Successfully!",
+        description: "Thank you for your message! We'll get back to you within 24 hours.",
+      });
+      
+      setContactForm({
+        name: "",
+        email: "",
+        subject: "",
+        message: "",
+        inquiryType: ""
+      });
 
-    setIsSubmitting(false);
+    } catch (error) {
+      console.error("Error submitting contact form:", error);
+      toast({
+        title: "Message Error",
+        description: "There was an issue sending your message. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const contactInfo = [

@@ -13,6 +13,7 @@ import Impact from "./pages/Impact";
 import Contact from "./pages/Contact";
 import Donate from "./pages/Donate";
 import Volunteer from "./pages/Volunteer";
+import AdminPanel from "./pages/AdminPanel";
 import FloatingActionButtons from "./components/FloatingActionButtons";
 import ScrollProgressIndicator from "./components/ScrollProgressIndicator";
 
@@ -36,6 +37,7 @@ const App = () => (
               <Route path="/contact" element={<Contact />} />
               <Route path="/donate" element={<Donate />} />
               <Route path="/volunteer" element={<Volunteer />} />
+              <Route path="/admin" element={<AdminPanel />} />
 
               <Route path="*" element={<NotFound />} />
             </Routes>
