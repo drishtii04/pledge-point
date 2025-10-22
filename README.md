@@ -1,22 +1,12 @@
-# Welcome to your Lovable project
+# Basava Yuva Brigade - Pledge Point
 
-## Project info
+## Project Overview
 
-**URL**: https://lovable.dev/projects/3b0aa398-5294-44d0-a080-36134ae1c1b5
+A modern web platform for the Basava Yuva Brigade organization to manage volunteer registrations, donations, and community engagement.
 
-## How can I edit this code?
+## Development Setup
 
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/3b0aa398-5294-44d0-a080-36134ae1c1b5) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+To get started with development, follow these steps:
 
 The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
@@ -60,14 +50,19 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
-## How can I deploy this project?
+## Deployment
 
-Simply open [Lovable](https://lovable.dev/projects/3b0aa398-5294-44d0-a080-36134ae1c1b5) and click on Share -> Publish.
+This project can be deployed to various platforms:
 
-## Can I connect a custom domain to my Lovable project?
+- **Vercel**: Connect your GitHub repository for automatic deployments
+- **Netlify**: Deploy directly from your Git repository
+- **GitHub Pages**: Use GitHub Actions for deployment
+- **Firebase Hosting**: Deploy using Firebase CLI
 
-Yes, you can!
+## Features
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+- **Volunteer Management**: Registration and tracking system
+- **Donation Platform**: Secure donation processing
+- **Contact System**: Inquiry management with email notifications
+- **Admin Panel**: Administrative dashboard for data management
+- **Email Notifications**: Automated confirmations and replies
