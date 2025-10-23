@@ -49,18 +49,32 @@ export const generateUpiPaymentUrl = (
   // Generate transaction reference
   const transactionRef = `BYB${Date.now()}${Math.floor(Math.random() * 1000)}`;
   
-  // UPI payment parameters
+  // For QR code, we need the standard UPI URL format
+  if (upiApp === 'generic') {
+    // Standard UPI URL format for QR codes
+    const upiParams = [
+      `pa=${UPI_CONFIG.upiId}`,
+      `pn=${encodeURIComponent(UPI_CONFIG.merchantName)}`,
+      `am=${amount}`,
+      `cu=${UPI_CONFIG.currency}`,
+      `tn=${encodeURIComponent(`Donation to ${UPI_CONFIG.merchantName} - ${isAnonymous ? 'Anonymous' : donorName}`)}`,
+      `tr=${transactionRef}`
+    ];
+    
+    return `upi://pay?${upiParams.join('&')}`;
+  }
+  
+  // For specific apps, use their deep link format
   const upiParams = {
-    pa: UPI_CONFIG.upiId, // Payee Address (UPI ID)
-    pn: UPI_CONFIG.merchantName, // Payee Name
-    am: amount.toString(), // Amount
-    cu: UPI_CONFIG.currency, // Currency
-    tn: `Donation to ${UPI_CONFIG.merchantName} - ${isAnonymous ? 'Anonymous' : donorName}`, // Transaction Note
-    tr: transactionRef, // Transaction Reference
-    mc: UPI_CONFIG.merchantCode, // Merchant Code (optional)
+    pa: UPI_CONFIG.upiId,
+    pn: UPI_CONFIG.merchantName,
+    am: amount.toString(),
+    cu: UPI_CONFIG.currency,
+    tn: `Donation to ${UPI_CONFIG.merchantName} - ${isAnonymous ? 'Anonymous' : donorName}`,
+    tr: transactionRef,
+    mc: UPI_CONFIG.merchantCode,
   };
 
-  // Build UPI URL
   const baseUrl = UPI_CONFIG.upiApps[upiApp];
   const queryParams = new URLSearchParams(upiParams).toString();
   
@@ -69,7 +83,15 @@ export const generateUpiPaymentUrl = (
 
 // Generate QR Code data for UPI payment
 export const generateUpiQrData = (paymentData: UpiPaymentData): string => {
-  return generateUpiPaymentUrl(paymentData, 'generic');
+  const { amount, donorName, isAnonymous } = paymentData;
+  
+  // Generate transaction reference
+  const transactionRef = `BYB${Date.now()}${Math.floor(Math.random() * 1000)}`;
+  
+  // Standard UPI URL format for QR codes (most compatible)
+  const upiString = `upi://pay?pa=${UPI_CONFIG.upiId}&pn=${encodeURIComponent(UPI_CONFIG.merchantName)}&am=${amount}&cu=${UPI_CONFIG.currency}&tn=${encodeURIComponent(`Donation-${isAnonymous ? 'Anonymous' : donorName}`)}&tr=${transactionRef}`;
+  
+  return upiString;
 };
 
 // Launch UPI app for payment

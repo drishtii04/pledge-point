@@ -1,695 +1,322 @@
-import { useState, useCallback, useEffect } from "react";
+﻿import React, { useState } from "react";
+import { Heart, CreditCard, Shield, Award } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Heart, CreditCard, Shield, Award, Smartphone, QrCode, Copy, CheckCircle } from "lucide-react";
-import { addDonation } from "@/lib/donationService";
 import { useToast } from "@/hooks/use-toast";
-import { sendDonationNotificationEmail } from "@/lib/emailService";
 import { 
-  generateUpiQrData,
-  launchUpiPayment, 
-  isUpiSupported, 
-  copyUpiId,
-  getAvailableUpiMethods,
-  type UpiPaymentData 
-} from "@/lib/upiService";
-import QRCode from 'qrcode';
+  createPayUPayment,
+  submitPayUPayment,
+  type PayUPaymentData 
+} from "@/lib/payuService";
 
 const DonationSection = () => {
-  const { toast } = useToast();
-  const [amount, setAmount] = useState("");
-  const [isMonthly, setIsMonthly] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showUpiModal, setShowUpiModal] = useState(false);
-  const [qrCodeUrl, setQrCodeUrl] = useState("");
-  const [paymentStatus, setPaymentStatus] = useState<'pending' | 'success' | 'failed'>('pending');
-  const [transactionId, setTransactionId] = useState("");
-  const [countdown, setCountdown] = useState(3);
-  const [buttonClicked, setButtonClicked] = useState(false);
+  const [amount, setAmount] = useState<string>("");
+  const [customAmount, setCustomAmount] = useState<string>("");
   const [donorInfo, setDonorInfo] = useState({
-    name: "",
+    firstName: "",
+    lastName: "",
     email: "",
     phone: "",
-    anonymous: false
   });
+  const [anonymous, setAnonymous] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const { toast } = useToast();
 
-  // Check if UPI is supported
-  const upiSupported = isUpiSupported();
-  const upiMethods = getAvailableUpiMethods();
+  const predefinedAmounts = ["500", "1000", "2500", "5000"];
 
-  // Generate QR code for UPI payment
-  const generateQrCode = useCallback(async (paymentData: UpiPaymentData) => {
-    try {
-      const upiUrl = generateUpiQrData(paymentData);
-      const qrDataUrl = await QRCode.toDataURL(upiUrl, {
-        width: 256,
-        margin: 2,
-        color: {
-          dark: '#000000',
-          light: '#FFFFFF'
-        }
-      });
-      setQrCodeUrl(qrDataUrl);
-    } catch (error) {
-      console.error('Error generating QR code:', error);
+  const handleAmountSelect = (selectedAmount: string) => {
+    setAmount(selectedAmount);
+    setCustomAmount("");
+  };
+
+  const handleCustomAmountChange = (value: string) => {
+    setCustomAmount(value);
+    setAmount("");
+  };
+
+  const handleDonorInfoChange = (field: string, value: string) => {
+    setDonorInfo(prev => ({ ...prev, [field]: value }));
+  };
+
+  const validateForm = () => {
+    const finalAmount = amount || customAmount;
+    
+    if (!finalAmount || isNaN(Number(finalAmount)) || Number(finalAmount) < 1) {
       toast({
-        title: "QR Code Error",
-        description: "Failed to generate QR code. You can still use UPI ID for payment.",
         variant: "destructive",
+        title: "Invalid Amount",
+        description: "Please enter a valid donation amount (minimum ₹1)",
       });
+      return false;
     }
-  }, [toast]);
 
-  // Handle UPI payment initiation
-  const handleUpiPayment = async (upiApp: string) => {
-    const paymentData: UpiPaymentData = {
-      donorName: donorInfo.anonymous ? "Anonymous Donor" : donorInfo.name,
-      donorEmail: donorInfo.anonymous ? "" : donorInfo.email,
-      donorPhone: donorInfo.anonymous ? "" : donorInfo.phone,
-      amount: parseFloat(amount),
-      donationType: isMonthly ? 'monthly' : 'one-time',
-      isAnonymous: donorInfo.anonymous,
-    };
-
-    try {
-      const success = await launchUpiPayment(paymentData, upiApp as keyof typeof upiMethods);
-      
-      if (success) {
-        // Generate transaction ID for tracking
-        const txnId = `BYB${Date.now()}${Math.floor(Math.random() * 1000)}`;
-        setTransactionId(txnId);
-        
+    if (!anonymous) {
+      if (!donorInfo.firstName || !donorInfo.email) {
         toast({
-          title: "UPI App Launched",
-          description: "Please complete the payment in your UPI app and confirm below.",
-        });
-      } else {
-        toast({
-          title: "UPI Launch Failed",
-          description: "Couldn't open UPI app. Please use QR code or manual UPI ID.",
           variant: "destructive",
+          title: "Required Information",
+          description: "Please fill in your name and email address",
         });
+        return false;
       }
-    } catch (error) {
-      console.error('UPI payment error:', error);
-      toast({
-        title: "UPI Error",
-        description: "Failed to initiate UPI payment. Please try again.",
-        variant: "destructive",
-      });
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(donorInfo.email)) {
+        toast({
+          variant: "destructive",
+          title: "Invalid Email",
+          description: "Please enter a valid email address",
+        });
+        return false;
+      }
     }
+
+    return true;
   };
 
-  // Copy UPI ID to clipboard
-  const handleCopyUpiId = async () => {
-    const success = await copyUpiId();
-    if (success) {
-      toast({
-        title: "Copied!",
-        description: "UPI ID copied to clipboard: abhisek0baniya@oksbi",
-      });
-    } else {
-      toast({
-        title: "Copy Failed",
-        description: "Couldn't copy UPI ID. Please note it manually: abhisek0baniya@oksbi",
-        variant: "destructive",
-      });
-    }
-  };
+  const handlePayUPayment = async () => {
+    if (!validateForm()) return;
 
-  // Handle payment confirmation
-  const handlePaymentConfirmation = async (isConfirmed: boolean) => {
-    console.log('Payment confirmation clicked:', isConfirmed);
-    
-    if (!isConfirmed) {
-      setPaymentStatus('failed');
-      setShowUpiModal(false);
-      setIsSubmitting(false);
-      setButtonClicked(false);
-      return;
-    }
+    setIsProcessing(true);
 
-    // Prevent double clicks
-    if (buttonClicked) {
-      console.log('Button already clicked, ignoring');
-      return;
-    }
-
-    // Start processing payment confirmation
-    setButtonClicked(true);
-    setIsSubmitting(true);
-    setPaymentStatus('success');
-    
-    // Safety timeout to prevent infinite loading state
-    const safetyTimeout = setTimeout(() => {
-      console.log('Safety timeout: Resetting isSubmitting state');
-      setIsSubmitting(false);
-    }, 5000);
-    
     try {
-      // Prepare donation data for Firebase
-      const donationData = {
-        donorName: donorInfo.anonymous ? "Anonymous Donor" : donorInfo.name,
-        email: donorInfo.anonymous ? "" : donorInfo.email,
-        phone: donorInfo.anonymous ? "" : donorInfo.phone,
-        amount: parseFloat(amount) || 0,
-        donationType: isMonthly ? 'monthly' as const : 'one-time' as const,
-        paymentMethod: 'upi',
-        message: `UPI Donation - ${isMonthly ? 'Monthly' : 'One-time'} contribution`,
-        isAnonymous: donorInfo.anonymous,
-        transactionId: transactionId || `BYB${Date.now()}`,
+      const finalAmount = amount || customAmount;
+      const paymentData: PayUPaymentData = {
+        amount: Number(finalAmount),
+        donorName: anonymous ? "Anonymous" : donorInfo.firstName,
+        donorEmail: anonymous ? "anonymous@donation.com" : donorInfo.email,
+        donorPhone: anonymous ? "9999999999" : (donorInfo.phone || "9999999999"),
+        donationType: 'one-time' as const,
+        purpose: `Donation to Basava Yuva Brigade - ₹${finalAmount}`,
       };
 
-      console.log('Submitting donation data:', donationData);
+      const formData = createPayUPayment(paymentData);
+      
+      toast({
+        title: "Redirecting to PayU",
+        description: `Transaction ID: ${formData.txnid}. You will be redirected to complete your donation.`,
+      });
 
-      // Submit to Firebase
-      console.log('Calling addDonation...');
-      await addDonation(donationData);
-      console.log('Donation added successfully');
-
-      // Send email notification (run in background)
-      try {
-        await sendDonationNotificationEmail({
-          donor_name: donorInfo.anonymous ? 'Anonymous Donor' : donorInfo.name,
-          donor_email: donorInfo.anonymous ? '' : donorInfo.email,
-          donation_amount: parseFloat(amount),
-          donation_type: isMonthly ? 'monthly' : 'one-time',
-          is_anonymous: donorInfo.anonymous,
-          from_name: donorInfo.anonymous ? 'Anonymous Donor' : donorInfo.name,
-          from_email: donorInfo.anonymous ? 'no-reply@basava-yuva-brigade.org' : donorInfo.email,
-          subject: 'New Donation Received',
-          message: `Donation of ₹${amount} received via website`,
-        });
-
-        toast({
-          title: "🎉 Donation Recorded!",
-          description: `Thank you for your ${isMonthly ? 'monthly' : 'one-time'} donation of ₹${amount}! Your UPI payment has been confirmed and recorded.`,
-        });
-      } catch (emailError) {
-        console.error('Email notification error (non-critical):', emailError);
-        toast({
-          title: "🎉 Donation Recorded!",
-          description: `Thank you for your ${isMonthly ? 'monthly' : 'one-time'} donation of ₹${amount}! Your UPI payment has been confirmed. (Note: Email notifications may have failed)`,
-        });
-      }
-
-      // Start countdown for auto-close
-      console.log('Starting countdown for auto-close');
-      setCountdown(3);
+      setTimeout(() => {
+        submitPayUPayment(formData);
+      }, 2000);
 
     } catch (error) {
-      console.error("Error recording donation:", error);
-      
-      // Still show success to user but with error message
+      console.error("Payment error:", error);
       toast({
-        title: "Payment Confirmed",
-        description: "Your payment is confirmed, but there was an issue recording it. Please contact us if needed.",
         variant: "destructive",
+        title: "Payment Error",
+        description: "Unable to process payment. Please try again.",
       });
-      
-      // Still start countdown even if there's an error
-      setCountdown(3);
+      setIsProcessing(false);
     }
-    
-    // Always reset submitting state
-    clearTimeout(safetyTimeout);
-    setIsSubmitting(false);
-    setButtonClicked(false);
-    console.log('Payment confirmation completed, all states reset');
-  };
-
-  // Countdown timer for auto-close
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-    
-    if (paymentStatus === 'success' && countdown > 0) {
-      // Ensure isSubmitting is false during countdown
-      if (isSubmitting) {
-        console.log('Forcing isSubmitting to false during countdown');
-        setIsSubmitting(false);
-      }
-      
-      timer = setTimeout(() => {
-        setCountdown(countdown - 1);
-      }, 1000);
-    } else if (paymentStatus === 'success' && countdown === 0) {
-      // Auto-close modal and reset form
-      console.log('Auto-closing modal after countdown');
-      setShowUpiModal(false);
-      setAmount("");
-      setIsMonthly(false);
-      setDonorInfo({
-        name: "",
-        email: "",
-        phone: "",
-        anonymous: false
-      });
-      setPaymentStatus('pending');
-      setQrCodeUrl("");
-      setCountdown(3);
-      setIsSubmitting(false);
-      setButtonClicked(false);
-    }
-
-    return () => {
-      if (timer) clearTimeout(timer);
-    };
-  }, [paymentStatus, countdown, isSubmitting]);
-
-  // Reset countdown when modal opens
-  useEffect(() => {
-    if (showUpiModal && paymentStatus === 'pending') {
-      setCountdown(3);
-      setButtonClicked(false);
-      setIsSubmitting(false);
-    }
-  }, [showUpiModal, paymentStatus]);
-
-  // Fallback: Force close modal if it's been in success state too long
-  useEffect(() => {
-    let fallbackTimer: NodeJS.Timeout;
-    
-    if (paymentStatus === 'success') {
-      fallbackTimer = setTimeout(() => {
-        console.log('Fallback: Force closing modal');
-        setShowUpiModal(false);
-        setPaymentStatus('pending');
-        setIsSubmitting(false);
-        setCountdown(3);
-      }, 10000); // 10 second fallback
-    }
-
-    return () => {
-      if (fallbackTimer) clearTimeout(fallbackTimer);
-    };
-  }, [paymentStatus]);
-
-  // Main donation handler - opens UPI payment modal
-  const handleDonation = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Validate form
-    if (!amount || parseFloat(amount) < 1) {
-      toast({
-        title: "Invalid Amount",
-        description: "Please enter a valid donation amount (minimum ₹1).",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (!donorInfo.anonymous && (!donorInfo.name || !donorInfo.email)) {
-      toast({
-        title: "Missing Information",
-        description: "Please fill in your name and email, or choose to donate anonymously.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsSubmitting(true);
-    
-    // Prepare payment data for UPI
-    const paymentData: UpiPaymentData = {
-      donorName: donorInfo.anonymous ? "Anonymous Donor" : donorInfo.name,
-      donorEmail: donorInfo.anonymous ? "" : donorInfo.email,
-      donorPhone: donorInfo.anonymous ? "" : donorInfo.phone,
-      amount: parseFloat(amount),
-      donationType: isMonthly ? 'monthly' : 'one-time',
-      isAnonymous: donorInfo.anonymous,
-    };
-
-    // Generate transaction ID for tracking
-    const txnId = `BYB${Date.now()}${Math.floor(Math.random() * 1000)}`;
-    setTransactionId(txnId);
-    
-    // Generate QR code and show UPI modal
-    await generateQrCode(paymentData);
-    setPaymentStatus('pending');
-    setShowUpiModal(true);
   };
 
   return (
-    <section id="donate" className="py-20 bg-muted/30">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-16 animate-fade-in">
-          <h2 className="text-4xl md:text-5xl font-bold mb-8">
-            Make a <span className="gradient-text">Donation</span>
+    <section id="donate" className="py-16 px-4 bg-gradient-to-br from-green-50 to-blue-50">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            Make a Donation
           </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Your generous contribution helps us continue our mission of creating positive change 
-            in communities worldwide. Every donation, no matter the size, makes a real difference.
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            Your contribution helps us create lasting change in communities. 
+            Every donation, no matter the size, makes a meaningful difference in someone's life.
           </p>
         </div>
 
-        <div className="max-w-4xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-8">
-            {/* Donation Form */}
-            <Card className="card-elevated animate-slide-up">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2 text-2xl">
-                  <Heart className="w-6 h-6 text-primary" />
-                  <span>Donation Details</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleDonation} className="space-y-6">
-                  {/* Donation Type */}
-                  <div className="flex items-center space-x-4">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox 
-                        id="monthly" 
-                        checked={isMonthly}
-                        onCheckedChange={(checked) => setIsMonthly(!!checked)}
+        <div className="grid lg:grid-cols-2 gap-8">
+          {/* Donation Form */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Heart className="w-5 h-5 text-red-500" />
+                Donation Details
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Amount Selection */}
+              <div>
+                <Label className="text-sm font-medium mb-3 block">Choose Amount (₹)</Label>
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  {predefinedAmounts.map((preAmount) => (
+                    <Button
+                      key={preAmount}
+                      variant={amount === preAmount ? "default" : "outline"}
+                      onClick={() => handleAmountSelect(preAmount)}
+                      className="h-12"
+                    >
+                      ₹{preAmount}
+                    </Button>
+                  ))}
+                </div>
+                
+                <div>
+                  <Label htmlFor="custom-amount" className="text-sm text-gray-600">
+                    Or enter custom amount
+                  </Label>
+                  <Input
+                    id="custom-amount"
+                    type="number"
+                    placeholder="Enter amount"
+                    value={customAmount}
+                    onChange={(e) => handleCustomAmountChange(e.target.value)}
+                    className="mt-1"
+                    min="1"
+                  />
+                </div>
+              </div>
+
+              {/* Anonymous Donation Toggle */}
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="anonymous"
+                  checked={anonymous}
+                  onCheckedChange={(checked) => setAnonymous(checked === true)}
+                />
+                <Label 
+                  htmlFor="anonymous" 
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Make this an anonymous donation
+                </Label>
+              </div>
+
+              {/* Donor Information */}
+              {!anonymous && (
+                <div className="space-y-4">
+                  <h4 className="font-medium text-gray-900">Donor Information</h4>
+                  
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label htmlFor="firstName">First Name *</Label>
+                      <Input
+                        id="firstName"
+                        value={donorInfo.firstName}
+                        onChange={(e) => handleDonorInfoChange("firstName", e.target.value)}
+                        placeholder="First name"
+                        required
                       />
-                      <Label htmlFor="monthly">Make this a monthly donation</Label>
+                    </div>
+                    <div>
+                      <Label htmlFor="lastName">Last Name</Label>
+                      <Input
+                        id="lastName"
+                        value={donorInfo.lastName}
+                        onChange={(e) => handleDonorInfoChange("lastName", e.target.value)}
+                        placeholder="Last name"
+                      />
                     </div>
                   </div>
 
-                  {/* Amount Input */}
                   <div>
-                    <Label className="text-base font-semibold mb-4 block">
-                      Enter Donation Amount (₹)
-                    </Label>
+                    <Label htmlFor="email">Email Address *</Label>
                     <Input
-                      type="number"
-                      placeholder="Enter amount in INR"
-                      value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
-                      className="w-full"
-                      min="1"
+                      id="email"
+                      type="email"
+                      value={donorInfo.email}
+                      onChange={(e) => handleDonorInfoChange("email", e.target.value)}
+                      placeholder="your@email.com"
+                      required
                     />
                   </div>
 
-                  {/* Message */}
-                  <div className="p-4 bg-success/10 border border-success/20 rounded-lg">
-                    <p className="text-sm text-success font-medium">
-                      Every contribution makes a difference in someone's life. Thank you for your support.
-                    </p>
-                  </div>
-
-                  {/* Donor Information */}
-                  <div className="space-y-4">
-                    <Label className="text-base font-semibold">Donor Information</Label>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="name">Full Name</Label>
-                        <Input
-                          id="name"
-                          value={donorInfo.name}
-                          onChange={(e) => setDonorInfo({...donorInfo, name: e.target.value})}
-                          required
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="email">Email Address</Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          value={donorInfo.email}
-                          onChange={(e) => setDonorInfo({...donorInfo, email: e.target.value})}
-                          required
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <Label htmlFor="phone">Phone Number (Optional)</Label>
-                      <Input
-                        id="phone"
-                        value={donorInfo.phone}
-                        onChange={(e) => setDonorInfo({...donorInfo, phone: e.target.value})}
-                      />
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox 
-                        id="anonymous" 
-                        checked={donorInfo.anonymous}
-                        onCheckedChange={(checked) => setDonorInfo({...donorInfo, anonymous: !!checked})}
-                      />
-                      <Label htmlFor="anonymous">Make this donation anonymous</Label>
-                    </div>
-                  </div>
-
-                  {/* Submit Button */}
-                  <Button type="submit" size="lg" className="w-full cta-gradient text-lg" disabled={isSubmitting}>
-                    <Smartphone className="w-5 h-5 mr-2" />
-                    {isSubmitting ? "Preparing UPI Payment..." : `Pay ₹${amount || "0"} via UPI${isMonthly ? "/month" : ""}`}
-                  </Button>
-
-                  {/* Security Note */}
-                  <div className="flex items-center justify-center space-x-2 text-sm text-muted-foreground">
-                    <Shield className="w-4 h-4" />
-                    <span>Secure UPI payments powered by India's digital payment infrastructure</span>
-                  </div>
-                </form>
-              </CardContent>
-            </Card>
-
-            {/* Why Donate Section */}
-            <div className="space-y-6 animate-scale-in">
-              <Card className="card-elevated">
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Award className="w-5 h-5 text-primary" />
-                    <span>Why Your Donation Matters</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-start space-x-3">
-                    <div className="w-2 h-2 bg-primary rounded-full mt-2"></div>
-                    <p className="text-sm">
-                      <strong>Transparent Use:</strong> 90% of donations go directly to programs, 
-                      with only 10% for administrative costs.
-                    </p>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <div className="w-2 h-2 bg-secondary rounded-full mt-2"></div>
-                    <p className="text-sm">
-                      <strong>Proven Impact:</strong> Over 50,000 lives improved through our 
-                      evidence-based programs.
-                    </p>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <div className="w-2 h-2 bg-accent rounded-full mt-2"></div>
-                    <p className="text-sm">
-                      <strong>Regular Updates:</strong> Receive quarterly reports showing 
-                      exactly how your donation created change.
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="card-elevated">
-                <CardHeader>
-                  <CardTitle>Other Ways to Give</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <Button variant="outline" className="w-full justify-start">
-                    Corporate Sponsorship
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    In-Kind Donations
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    Planned Giving
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    Fundraise for Us
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* UPI Payment Modal */}
-      <Dialog open={showUpiModal} onOpenChange={setShowUpiModal}>
-        <DialogContent className="max-w-lg w-full mx-auto max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center space-x-2">
-              <Smartphone className="w-5 h-5" />
-              <span>UPI Payment</span>
-            </DialogTitle>
-          </DialogHeader>
-          
-          <div className="space-y-4 pb-4">
-            {/* Payment Details */}
-            <div className="text-center p-3 bg-muted rounded-lg">
-              <p className="text-xs text-muted-foreground">Amount to Pay</p>
-              <p className="text-xl sm:text-2xl font-bold">₹{amount}</p>
-              <p className="text-xs text-muted-foreground">
-                {isMonthly ? 'Monthly' : 'One-time'} Donation
-              </p>
-            </div>
-
-            {paymentStatus === 'pending' && (
-              <>
-                {/* QR Code */}
-                {qrCodeUrl ? (
-                  <div className="text-center space-y-3">
-                    <div className="flex justify-center">
-                      <div className="p-3 bg-white rounded-lg border shadow-sm">
-                        <img 
-                          src={qrCodeUrl} 
-                          alt="UPI QR Code for Donation" 
-                          className="w-40 h-40 sm:w-48 sm:h-48 object-contain"
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-sm text-muted-foreground">
-                        Scan this QR code with any UPI app
-                      </p>
-                      <p className="text-xs font-medium text-primary">
-                        Amount: ₹{amount} • {isMonthly ? 'Monthly' : 'One-time'} Donation
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        UPI ID: abhisek0baniya@oksbi
-                      </p>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-center space-y-3">
-                    <div className="flex justify-center">
-                      <div className="p-8 bg-muted rounded-lg border">
-                        <QrCode className="w-16 h-16 text-muted-foreground" />
-                      </div>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      Generating QR code...
-                    </p>
-                  </div>
-                )}
-
-                {/* UPI Apps */}
-                {upiSupported && (
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium text-center">Or pay with your UPI app:</p>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                      {upiMethods.slice(0, 6).map((method) => (
-                        <Button
-                          key={method.id}
-                          variant="outline"
-                          className="flex items-center justify-center space-x-1 h-10 text-xs"
-                          onClick={() => handleUpiPayment(method.id)}
-                        >
-                          <span className="text-base">{method.icon}</span>
-                          <span className="hidden sm:inline">{method.name}</span>
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Manual UPI ID */}
-                <div className="space-y-1">
-                  <p className="text-sm font-medium">Manual Payment:</p>
-                  <div className="flex items-center space-x-2 p-2 bg-muted rounded text-sm">
-                    <code className="flex-1 text-xs sm:text-sm">abhisek0baniya@oksbi</code>
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      onClick={handleCopyUpiId}
-                      className="h-8 w-8 p-0"
-                    >
-                      <Copy className="w-3 h-3" />
-                    </Button>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Copy this UPI ID and use it in your UPI app
-                  </p>
-                </div>
-
-                {/* Confirmation Buttons */}
-                <div className="space-y-2 pt-2 border-t">
-                  <p className="text-sm text-center">Have you completed the payment?</p>
-                  <div className="flex space-x-2">
-                    <Button 
-                      onClick={() => {
-                        console.log('Yes Paid button clicked, isSubmitting:', isSubmitting, 'buttonClicked:', buttonClicked);
-                        if (!isSubmitting && !buttonClicked) {
-                          handlePaymentConfirmation(true);
-                        }
-                      }}
-                      className="flex-1 h-10"
-                      disabled={isSubmitting || buttonClicked || paymentStatus === 'success'}
-                    >
-                      {isSubmitting && paymentStatus !== 'success' ? (
-                        <>
-                          <div className="w-4 h-4 mr-1 animate-spin border-2 border-white border-t-transparent rounded-full"></div>
-                          <span className="text-sm">Processing...</span>
-                        </>
-                      ) : (
-                        <>
-                          <CheckCircle className="w-4 h-4 mr-1" />
-                          <span className="text-sm">Yes, Paid</span>
-                        </>
-                      )}
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      onClick={() => {
-                        console.log('Cancel button clicked');
-                        handlePaymentConfirmation(false);
-                      }}
-                      className="flex-1 h-10"
-                      disabled={isSubmitting || paymentStatus === 'success'}
-                    >
-                      <span className="text-sm">Cancel</span>
-                    </Button>
+                  <div>
+                    <Label htmlFor="phone">Phone Number</Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      value={donorInfo.phone}
+                      onChange={(e) => handleDonorInfoChange("phone", e.target.value)}
+                      placeholder="Your phone number"
+                    />
                   </div>
                 </div>
-              </>
-            )}
+              )}
 
-            {paymentStatus === 'success' && (
-              <div className="text-center space-y-4">
-                <div className="relative">
-                  <CheckCircle className="w-16 h-16 text-green-500 mx-auto animate-pulse" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-20 h-20 border-4 border-green-200 rounded-full animate-ping"></div>
+              {/* Payment Button */}
+              <Button
+                onClick={handlePayUPayment}
+                disabled={isProcessing}
+                className="w-full h-12 text-lg bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
+              >
+                <CreditCard className="w-5 h-5 mr-2" />
+                {isProcessing ? "Processing..." : `Donate ₹${amount || customAmount || "0"}`}
+              </Button>
+
+              <div className="flex items-center justify-center text-sm text-gray-500">
+                <Shield className="w-4 h-4 mr-1" />
+                Secured by PayU - Test Mode
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Impact Information */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Award className="w-5 h-5 text-yellow-500" />
+                Your Impact
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-4">
+                <div className="flex items-start space-x-3">
+                  <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <div>
+                    <h4 className="font-medium text-gray-900">₹500</h4>
+                    <p className="text-sm text-gray-600">Provides educational materials for 5 children</p>
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <h3 className="text-lg font-semibold text-green-600">Payment Successful!</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Thank you for your donation of ₹{amount}! You will receive an email confirmation shortly.
-                  </p>
-                  <div className="mt-4 p-3 bg-green-50 rounded-lg border border-green-200">
-                    <p className="text-sm text-green-700 font-medium">
-                      Auto-closing in {countdown} second{countdown !== 1 ? 's' : ''}...
-                    </p>
-                    <div className="mt-2 w-full bg-green-200 rounded-full h-2">
-                      <div 
-                        className="bg-green-500 h-2 rounded-full transition-all duration-1000"
-                        style={{ width: `${(3 - countdown) / 3 * 100}%` }}
-                      ></div>
-                    </div>
+                
+                <div className="flex items-start space-x-3">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <div>
+                    <h4 className="font-medium text-gray-900">₹1,000</h4>
+                    <p className="text-sm text-gray-600">Funds a health checkup camp for 20 people</p>
                   </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => {
-                      setShowUpiModal(false);
-                      setPaymentStatus('pending');
-                      setCountdown(3);
-                    }}
-                    className="mt-2"
-                  >
-                    Close Now
-                  </Button>
+                </div>
+                
+                <div className="flex items-start space-x-3">
+                  <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <div>
+                    <h4 className="font-medium text-gray-900">₹2,500</h4>
+                    <p className="text-sm text-gray-600">Supports skill development training for 10 youth</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start space-x-3">
+                  <div className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <div>
+                    <h4 className="font-medium text-gray-900">₹5,000</h4>
+                    <p className="text-sm text-gray-600">Sponsors a complete community development project</p>
+                  </div>
                 </div>
               </div>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
+
+              <div className="bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-lg">
+                <h4 className="font-medium text-gray-900 mb-2">Why Donate?</h4>
+                <ul className="text-sm text-gray-600 space-y-1">
+                  <li>• 100% of donations go directly to programs</li>
+                  <li>• Regular updates on project progress</li>
+                  <li>• Tax exemption certificate provided</li>
+                  <li>• Transparent fund utilization</li>
+                </ul>
+              </div>
+              
+              <div className="text-center">
+                <p className="text-sm text-gray-500 mb-2">Total donations received this year</p>
+                <div className="text-3xl font-bold text-green-600">₹2,45,000</div>
+                <p className="text-sm text-gray-500">Helping 500+ families</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </section>
   );
 };

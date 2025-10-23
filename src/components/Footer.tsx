@@ -119,13 +119,7 @@ const Footer = () => {
               ))}
             </ul>
             
-            {/* Quick Donate Button */}
-            <Button 
-              onClick={() => scrollToSection("donate")}
-              className="bg-secondary hover:bg-secondary-hover text-secondary-foreground w-full"
-            >
-              Donate Now
-            </Button>
+            
           </div>
         </div>
 

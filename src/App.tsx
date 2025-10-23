@@ -14,6 +14,8 @@ import Contact from "./pages/Contact";
 import Donate from "./pages/Donate";
 import Volunteer from "./pages/Volunteer";
 import AdminPanel from "./pages/AdminPanel";
+import PaymentSuccess from "./pages/PaymentSuccess";
+import PaymentFailure from "./pages/PaymentFailure";
 import FloatingActionButtons from "./components/FloatingActionButtons";
 import ScrollProgressIndicator from "./components/ScrollProgressIndicator";
 
@@ -38,6 +40,10 @@ const App = () => (
               <Route path="/donate" element={<Donate />} />
               <Route path="/volunteer" element={<Volunteer />} />
               <Route path="/admin" element={<AdminPanel />} />
+              
+              {/* PayU Payment Callback Routes */}
+              <Route path="/payment/success" element={<PaymentSuccess />} />
+              <Route path="/payment/failure" element={<PaymentFailure />} />
 
               <Route path="*" element={<NotFound />} />
             </Routes>
